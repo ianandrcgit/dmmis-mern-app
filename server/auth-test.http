@@ -1,0 +1,20 @@
+### Request 1: Register/Send OTP for System Manager (Setup)
+# Change the phone number to something unique
+POST http://localhost:5000/api/auth/login-otp
+Content-Type: application/json
+
+{
+    "phoneOrEmail": "+919999000000",
+    "role": "SystemManager"
+}
+
+### Request 2: Verify OTP
+# After running Request 1, check your server console for the printed OTP code, 
+# and paste it here for the "otp" field.
+POST http://localhost:5000/api/auth/verify-otp
+Content-Type: application/json
+
+{
+    "phoneOrEmail": "+919999000000",
+    "otp": "PASTE_THE_OTP_FROM_CONSOLE_HERE" 
+}
