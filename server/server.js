@@ -3,15 +3,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-// ADD THIS:
+// --- Route Imports ---
 const authRoutes = require('./routes/authRoutes');
+const incidentRoutes = require('./routes/incidentRoutes'); 
+const userRoutes = require('./routes/userRoutes'); 
 
 // Load environment variables from .env file
 dotenv.config(); 
 
 const app = express();
-// ADD THIS LINE (Middleware to parse JSON bodies)
-app.use(express.json()); // Allows us to read JSON data sent in the request body
+// Middleware to parse JSON bodies (Crucial for Postman body data)
+app.use(express.json()); 
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -28,9 +30,10 @@ const connectDB = async () => {
     }
 };
 
-// ADD THIS SECTION (Use Auth Routes)
-// Define the base path for authentication endpoints
+// --- Route Definitions ---
 app.use('/api/auth', authRoutes); 
+app.use('/api/users', userRoutes); 
+app.use('/api/incidents', incidentRoutes); 
 
 // Test route
 app.get('/', (req, res) => {
@@ -42,4 +45,4 @@ connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`🚀 Server is running on port ${PORT}`);
     });
-});
+}); 
