@@ -1,48 +1,36 @@
-// server/server.js
 const express = require('express');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const cors = require('cors'); //
+const connectDB = require('./config/db'); // Ensure this file exists in /config/
 
-// --- Route Imports ---
-const authRoutes = require('./routes/authRoutes');
-const incidentRoutes = require('./routes/incidentRoutes'); 
-const userRoutes = require('./routes/userRoutes'); 
+// Load environment variables
+dotenv.config();
 
-// Load environment variables from .env file
-dotenv.config(); 
+// Connect to Database
+connectDB();
 
 const app = express();
-// Middleware to parse JSON bodies (Crucial for Postman body data)
+
+// --- MIDDLEWARE (Crucial: Keep these ABOVE routes) ---
+// These lines fix the "Cannot destructure property 'phoneOrEmail' of 'req.body'" crash
 app.use(express.json()); 
+app.use(express.urlencoded({ extended: false }));
 
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI;
+// Enable Cross-Origin Resource Sharing for your Frontend
+app.use(cors());
 
-// Function to connect to MongoDB
-const connectDB = async () => {
-    try {
-        await mongoose.connect(MONGO_URI);
-        console.log('✅ MongoDB connected successfully!');
-    } catch (error) {
-        console.error('❌ MongoDB connection failed:', error.message);
-        // Exit process with failure
-        process.exit(1); 
-    }
-};
+// --- ROUTES ---
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/incidents', require('./routes/incidentRoutes'));
 
-// --- Route Definitions ---
-app.use('/api/auth', authRoutes); 
-app.use('/api/users', userRoutes); 
-app.use('/api/incidents', incidentRoutes); 
-
-// Test route
+// Basic Root Route
 app.get('/', (req, res) => {
-    res.send('DMMIS Server Running!');
+    res.send('DMMIS Backend is Running...');
 });
 
-// Start the server only after connecting to the database
-connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`🚀 Server is running on port ${PORT}`);
-    });
-}); 
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

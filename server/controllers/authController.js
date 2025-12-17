@@ -53,9 +53,13 @@ exports.sendOtp = asyncHandler(async (req, res) => {
     // Print OTP to console for testing
     console.log(`[OTP DEBUG] OTP for ${user.phoneOrEmail} (${user.role}): ${otpCode}`);
 
+    // In non-production environments, return the OTP in the response to ease testing.
+    const showOtp = true; // Always return OTP in response for local testing
+
     res.status(200).json({
         success: true,
-        message: 'OTP sent to console for testing.'
+        message: 'OTP sent to console for testing.',
+        otp: showOtp ? otpCode : undefined
     });
 });
 

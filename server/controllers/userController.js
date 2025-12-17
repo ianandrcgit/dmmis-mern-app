@@ -6,6 +6,9 @@ const asyncHandler = require('express-async-handler');
 // @route   POST /api/users
 // @access  Private (SystemManager only)
 exports.createUser = asyncHandler(async (req, res) => {
+    if (!req.body) {
+        return res.status(400).json({ success: false, message: 'Request body is missing. Ensure you send JSON and set `Content-Type: application/json`.' });
+    }
     const { phoneOrEmail, role, password } = req.body;
 
     if (!phoneOrEmail || !role || !password) {
