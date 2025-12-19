@@ -6,7 +6,12 @@
     <title>dmmis-mern-app</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">Loading app... (if this remains, client JS did not run)</div>
+    <script>
+      // Quick debug: mark that the HTML has loaded
+      console.log('index.html initial script running');
+      try { document.getElementById('root').dataset.htmlLoaded = 'true'; } catch(e){}
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

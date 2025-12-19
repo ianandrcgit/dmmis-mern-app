@@ -89,10 +89,15 @@ exports.verifyOtp = asyncHandler(async (req, res) => {
     // Generate JWT token
     const token = generateToken(user._id, user.role);
 
+    // Return token and a `data` object so frontend can store user info consistently
     res.status(200).json({
         success: true,
         token,
-        role: user.role,
+        data: {
+            id: user._id,
+            phoneOrEmail: user.phoneOrEmail,
+            role: user.role,
+        },
         message: 'Login successful.'
     });
 });

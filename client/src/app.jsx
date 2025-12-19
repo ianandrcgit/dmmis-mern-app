@@ -1,42 +1,27 @@
-// src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AppLayout from './components/layout/AppLayout';
-
-// Pages - NOTE: We will create these pages/components later.
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login'; 
-import CreateUserPage from './pages/systemManager/CreateUserPage';
-// import ProtectedRoute from './routes/ProtectedRoute'; // Will be imported in the next phase
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage'; // Ensure this points to LoginPage.jsx
+import { useAuth } from './context/AuthContext';
 
 function App() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                {/* Public Route: Login Page */}
-                <Route path="/login" element={<Login />} />
+  const { user, loading } = useAuth();
 
-                {/* Private Routes: Wrapped by AppLayout */}
-                <Route path="/" element={<AppLayout />}>
+  if (loading) return <div>Loading...</div>;
 
-                    {/* Dashboard (Home of the application) */}
-                    <Route index element={<Dashboard />} /> 
-
-                    {/* System Manager Routes */}
-                    <Route 
-                        path="system/create-user" 
-                        element={<CreateUserPage />} // Will be secured by ProtectedRoute later
-                    />
-
-                    {/* You can add more routes here later (e.g., /incidents, /profile) */}
-
-                </Route>
-
-                {/* Fallback for 404 (optional) */}
-                <Route path="*" element={<h1>404: Page Not Found</h1>} />
-            </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <Router>
+      <Routes>
+        {/* If logged in as Officer, go to officer dashboard */}
+        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/officer-dashboard" />} />
+        
+        <Route path="/officer-dashboard" element={
+            user?.role === 'VillageLevelOfficer' ? <div>Officer Dashboard</div> : <Navigate to="/login" />
+        } />
+        
+        <Route path="/" element={<Navigate to="/login" />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
