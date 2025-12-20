@@ -1,44 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import API from '../api/axios';
-import CreateUser from './systemManager/CreateUser'; // Ensure this path is correct
+import React from "react";
+import CreateUser from "./systemManager/CreateUser";
+import { useAuth } from "../context/AuthContext";
 
 const AdminDashboard = () => {
-    const [incidents, setIncidents] = useState([]);
+  const { logout, user } = useAuth();
 
-    useEffect(() => {
-        const fetchIncidents = async () => {
-            try {
-                const res = await API.get('/incidents');
-                if (res.data.success) setIncidents(res.data.data);
-            } catch (err) {
-                console.error("Fetch error:", err);
-            }
-        };
-        fetchIncidents();
-    }, []);
-
-    return (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-            {/* Left Side: User Management */}
-            <div>
-                <CreateUser />
-            </div>
-
-            {/* Right Side: Incident List */}
-            <div>
-                <h3>📋 All Reported Incidents</h3>
-                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                    {incidents.map(inc => (
-                        <div key={inc._id} style={{ border: '1px solid #ddd', padding: '10px', marginBottom: '10px', borderRadius: '5px' }}>
-                            <h4>{inc.title} ({inc.severity})</h4>
-                            <p><strong>Location:</strong> {inc.locationName} [{inc.location.coordinates[0]}, {inc.location.coordinates[1]}]</p>
-                            <p>{inc.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+  return (
+    <div style={{ padding: "20px" }}>
+      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1>Admin Control Panel</h1>
+        <div>
+          <span style={{ marginRight: "10px" }}>Admin: {user?.phoneOrEmail}</span>
+          <button onClick={logout} style={{ background: "red", color: "white", border: "none", padding: "5px 10px" }}>
+            Logout
+          </button>
         </div>
-    );
+      </header>
+
+      <hr />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "20px", marginTop: "20px" }}>
+        {/* User Creation Section */}
+        <section>
+          <CreateUser />
+        </section>
+
+        {/* System Overview Section */}
+        <section style={{ padding: "20px", background: "#f9f9f9", borderRadius: "8px" }}>
+          <h3>System Activity</h3>
+          <p>Welcome to the management dashboard. You can add new officers here. Registered officers will then be able to log in and report incidents like the one successfully submitted recently.</p>
+        </section>
+      </div>
+    </div>
+  );
 };
 
 export default AdminDashboard;

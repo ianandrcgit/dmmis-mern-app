@@ -1,79 +1,53 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import API from '../api/axios';
+import React from 'react';
 
 const OfficerDashboard = () => {
-    const { user, logout } = useAuth();
-    const [incident, setIncident] = useState({
-        title: '',
-        description: '',
-        location: '',
-        latitude: '',  // Added field
-        longitude: '', // Added field
-        severity: 'Medium'
-    });
-    const [statusMsg, setStatusMsg] = useState('');
-
-    const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        // Create the payload structure the backend expects
-        const payload = {
-            title: incident.title,
-            description: incident.description,
-            locationName: incident.location, // Assuming your backend calls the string field locationName
-            severity: incident.severity,
-            location: {
-                type: 'Point',
-                coordinates: [parseFloat(incident.longitude), parseFloat(incident.latitude)] //
-            }
-        };
-
-        const res = await API.post('/incidents', payload);
-        if (res.data.success) {
-            setStatusMsg('✅ Incident reported successfully!');
-            setIncident({ title: '', description: '', location: '', latitude: '', longitude: '', severity: 'Medium' });
-        }
-    } catch (err) {
-        // This will now show the specific error from the network preview if it fails again
-        setStatusMsg('❌ Error: ' + (err.response?.data?.message || 'Check coordinate format'));
-    }
-};
+    const card = 'bg-white rounded-lg shadow p-6';
+    const btn = 'w-full sm:w-auto px-6 py-3 rounded-md text-white font-medium';
 
     return (
-        <div style={{ padding: '20px', maxWidth: '500px' }}>
-            <h2>Officer Dashboard</h2>
-            <div style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
-                <h3>Report New Incident</h3>
-                {statusMsg && <p>{statusMsg}</p>}
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <input type="text" placeholder="Title" required
-                        value={incident.title} onChange={(e) => setIncident({...incident, title: e.target.value})} />
-                    
-                    <textarea placeholder="Description" required
-                        value={incident.description} onChange={(e) => setIncident({...incident, description: e.target.value})} />
-                    
-                    <input type="text" placeholder="Location Name" required
-                        value={incident.location} onChange={(e) => setIncident({...incident, location: e.target.value})} />
-
-                    {/* New Coordinate Inputs */}
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="number" step="any" placeholder="Latitude" required
-                            value={incident.latitude} onChange={(e) => setIncident({...incident, latitude: e.target.value})} />
-                        <input type="number" step="any" placeholder="Longitude" required
-                            value={incident.longitude} onChange={(e) => setIncident({...incident, longitude: e.target.value})} />
+        <div className="max-w-4xl mx-auto mt-8">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold">D</div>
+                    <div>
+                        <h1 className="text-2xl font-semibold">Village Officer</h1>
+                        <p className="text-sm text-gray-500">Data entry panel for field reporting</p>
                     </div>
-                    
-                    <select value={incident.severity} onChange={(e) => setIncident({...incident, severity: e.target.value})}>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                    </select>
-                    
-                    <button type="submit" style={{ backgroundColor: '#007bff', color: 'white', padding: '10px' }}>
-                        Submit Report
-                    </button>
-                </form>
+                </div>
+                <div>
+                    <button className="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className={`${card}`}>
+                    <h2 className="text-lg font-semibold mb-4">Quick Report</h2>
+                    <p className="text-sm text-gray-600 mb-4">Select the incident type below to start a concise data-entry form.</p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button className={`${btn} bg-indigo-600`}>
+                            Animal Loss
+                        </button>
+                        <button className={`${btn} bg-green-600`}>
+                            Human Loss
+                        </button>
+                        <button className={`${btn} bg-yellow-500`} style={{ color: '#1f2937' }}>
+                            House Damage
+                        </button>
+                        <button className={`${btn} bg-emerald-600`}>
+                            Crop Loss
+                        </button>
+                    </div>
+                </div>
+
+                <div className={`${card}`}>
+                    <h2 className="text-lg font-semibold mb-4">Report Preview</h2>
+                    <p className="text-sm text-gray-600">Fill fields after selecting a report type. This panel will show the form and quick summary.</p>
+
+                    <div className="mt-4 border border-dashed border-gray-200 rounded p-4 h-48 flex items-center justify-center text-gray-400">
+                        No report selected
+                    </div>
+                </div>
             </div>
         </div>
     );
